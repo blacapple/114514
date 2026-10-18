@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Happy Birthday!</title>
+    <style>
+        body {
+            background-color: #0f172a; color: #fff; font-family: Arial, sans-serif;
+            overflow: hidden; text-align: center; margin-top: 20vh;
+        }
+        h1 { font-size: 50px; color: #4ade80; text-shadow: 0 0 10px #4ade80; }
+        p { font-size: 20px; }
+        .particle {
+            position: absolute; color: #ff69b4; font-size: 24px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Happy Birthday!</h1>
+    <p>又变老一岁（bushi）</p>
+    <div id="container"></div>
+
+    <script>
+        const container = document.getElementById('container');
+        const emojis = ['🎂', '🎉', '🎈', '✨', '🥚', '😶‍🌫️'];
+        
+        function createParticle() {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 3 + 2 + 's';
+            p.style.opacity = Math.random();
+            container.appendChild(p);
+            
+            setTimeout(() => { p.remove(); }, 5000);
+        }
+        
+        setInterval(createParticle, 100);
+    </script>
+</body>
+</html>
