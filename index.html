@@ -1,46 +1,166 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday!</title>
     <style>
-        body {
-            background-color: #0f172a; color: #fff; font-family: Arial, sans-serif;
-            overflow: hidden; text-align: center; margin-top: 20vh;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0f172a;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
-        h1 { font-size: 50px; color: #4ade80; text-shadow: 0 0 10px #4ade80; }
-        p { font-size: 20px; }
+
+        .content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            z-index: 10; 
+            pointer-events: none; /* 让点击穿透到背景 */
+        }
+
+        h1 {
+            font-size: clamp(32px, 8vw, 56px);
+            color: #4ade80;
+            text-shadow: 0 0 15px #4ade80;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: clamp(16px, 4vw, 22px);
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* 粒子基础样式 */
         .particle {
-            position: absolute; color: #ff69b4; font-size: 24px;
-            animation: fall linear infinite;
+            position: absolute;
+            top: -50px; /* 确保从屏幕外开始掉落 */
+            pointer-events: none; 
+            z-index: 1;
+            /* 动画应用 */
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
         }
+
+        /* 动画：由 JS 动态控制下落距离，这里只处理旋转 */
         @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 提示按钮 */
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 40px;
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #4ade80;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 20;
+            pointer-events: auto; /* 恢复按钮点击 */
         }
     </style>
 </head>
 <body>
-    <h1>Happy Birthday!</h1>
-    <p>又变老一岁（bushi）</p>
-    <div id="container"></div>
+
+    <div class="content">
+        <h1>Happy Birthday!</h1>
+        <p>写给你的专属代码，祝你新的一岁，<br>永远没 Bug，逢考必过！</p>
+    </div>
+
+    <!-- 按钮在 content 外面，避免受 pointer-events 影响 -->
+    <div class="fullscreen-btn" id="fs-btn">点击进入全屏体验 👆</div>
 
     <script>
-        const container = document.getElementById('container');
-        const emojis = ['🎂', '🎉', '🎈', '✨', '🥚', '😶‍🌫️'];
+        const emojis = ['🎂', '🎉', '🎈', '✨', '💻', '🎁', '🥳', '🍰'];
         
         function createParticle() {
             const p = document.createElement('div');
             p.className = 'particle';
             p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            p.style.left = Math.random() * 100 + 'vw';
-            p.style.animationDuration = Math.random() * 3 + 2 + 's';
-            p.style.opacity = Math.random();
-            container.appendChild(p);
             
-            setTimeout(() => { p.remove(); }, 5000);
+            // 1. 横向铺满全屏（0 到 100vw）
+            p.style.left = Math.random() * 100 + 'vw';
+            
+            // 2. 随机大小，产生远近景的层次感（16px 到 40px）
+            const size = Math.random() * 24 + 16;
+            p.style.fontSize = size + 'px';
+            
+            // 3. 获取当前手机屏幕的真实高度（去掉地址栏后的可视高度）
+            const screenHeight = window.innerHeight;
+            
+            // 4. 随机下落时间（2秒到 5秒）
+            const duration = Math.random() * 3 + 2;
+            p.style.animationDuration = duration + 's';
+            
+            // 5. 随机透明度
+            p.style.opacity = Math.random() * 0.8 + 0.2; 
+
+            // 6. 使用 JS 动态设置下落距离（从顶部掉落到屏幕最底部再加 100px 确保完全离开屏幕）
+            p.style.setProperty('--fall-distance', (screenHeight + 100) + 'px');
+
+            // 定义 CSS 变量来结合下落和旋转
+            p.style.transform = `translateY(0) rotate(0deg)`;
+            
+            // 为了动画能正常运行，我们在这里动态生成一段仅适用于该粒子的 CSS 动画
+            p.style.animation = `fallDown${duration}s_${Math.floor(Math.random()*1000)} linear forwards`;
+            const styleSheet = document.styleSheets[0];
+            const keyframes = `
+                @keyframes fallDown${Math.floor(Math.random()*1000)} {
+                    to { transform: translateY(${screenHeight + 100}px) rotate(${Math.random() * 720 - 360}deg); }
+                }
+            `;
+            // 简单粗暴的注入方式（适用于较新浏览器）
+            const style = document.createElement('style');
+            style.innerHTML = keyframes;
+            document.head.appendChild(style);
+
+            document.body.appendChild(p);
+            
+            // 动画结束后立刻移除节点，释放内存
+            setTimeout(() => {
+                p.remove();
+                style.remove(); // 连带清除生成的动画
+            }, duration * 1000);
         }
         
+        // 每 100 毫秒生成一个，保持屏幕内有足够密集的表情
         setInterval(createParticle, 100);
+
+        // --- 全屏功能逻辑 ---
+        const fsBtn = document.getElementById('fs-btn');
+        fsBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    console.log(`全屏失败: ${err.message}`);
+                    fsBtn.innerText = "请使用浏览器菜单全屏";
+                });
+                fsBtn.style.display = 'none'; 
+            }
+        });
+        
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fsBtn.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
