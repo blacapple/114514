@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Birthday!</title>
+    <title>祝你生日快乐</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #0f172a;
+            background: #0f172a; /* 深色背景更能衬托蓝色荧光 */
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
@@ -25,126 +25,124 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            color: #fff;
-            font-family: Arial, sans-serif;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
             padding: 20px;
             z-index: 10; 
-            pointer-events: none; /* 让点击穿透到背景 */
+            pointer-events: none;
         }
 
+        /* 中文：大号蓝色荧光 */
         h1 {
-            font-size: clamp(32px, 8vw, 56px);
-            color: #4ade80;
-            text-shadow: 0 0 15px #4ade80;
-            margin-bottom: 16px;
+            font-size: clamp(40px, 10vw, 72px);
+            color: #00f3ff;
+            margin-bottom: 10px;
+            /* 多层发光效果，打造强烈的荧光感 */
+            text-shadow: 
+                0 0 10px #00f3ff,
+                0 0 20px #00f3ff,
+                0 0 40px #00f3ff,
+                0 0 80px #00b3ff;
+            /* 可以加个轻微呼吸灯效果 */
+            animation: pulse 2s infinite alternate;
         }
 
-        p {
-            font-size: clamp(16px, 4vw, 22px);
-            color: #cbd5e1;
-            line-height: 1.5;
+        @keyframes pulse {
+            from { text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 40px #00f3ff; }
+            to { text-shadow: 0 0 20px #00f3ff, 0 0 40px #00f3ff, 0 0 80px #00f3ff, 0 0 120px #00b3ff; }
+        }
+
+        /* 英文：放在下面 */
+        h2 {
+            font-size: clamp(24px, 6vw, 40px);
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         /* 粒子基础样式 */
         .particle {
             position: absolute;
-            top: -50px; /* 确保从屏幕外开始掉落 */
+            top: -50px; 
             pointer-events: none; 
             z-index: 1;
-            /* 动画应用 */
-            animation-name: fall;
-            animation-timing-function: linear;
-            animation-fill-mode: forwards;
         }
 
-        /* 动画：由 JS 动态控制下落距离，这里只处理旋转 */
-        @keyframes fall {
-            to { transform: rotate(360deg); }
-        }
-        
         /* 提示按钮 */
         .fullscreen-btn {
             position: absolute;
             bottom: 40px;
-            background: rgba(74, 222, 128, 0.2);
-            color: #4ade80;
+            background: rgba(0, 243, 255, 0.15);
+            color: #00f3ff;
             padding: 10px 20px;
             border-radius: 20px;
-            border: 1px solid #4ade80;
+            border: 1px solid #00f3ff;
             cursor: pointer;
             font-size: 14px;
             z-index: 20;
-            pointer-events: auto; /* 恢复按钮点击 */
+            pointer-events: auto; 
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
     </style>
 </head>
 <body>
 
     <div class="content">
-        <h1>Happy Birthday!</h1>
-        <p>写给你的专属代码，祝你新的一岁，<br>永远没 Bug，逢考必过！</p>
+        <h1>祝你生日快乐</h1>
+        <h2>Happy Birthday</h2>
     </div>
 
-    <!-- 按钮在 content 外面，避免受 pointer-events 影响 -->
     <div class="fullscreen-btn" id="fs-btn">点击进入全屏体验 👆</div>
 
     <script>
-        const emojis = ['🎂', '🎉', '🎈', '✨', '💻', '🎁', '🥳', '🍰'];
+        // 替换为你指定的表情
+        const emojis = ['🎂', '💰', '💯', '🌈', '🎁', '⭐', '🎉', '🥚'];
         
         function createParticle() {
             const p = document.createElement('div');
             p.className = 'particle';
             p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
             
-            // 1. 横向铺满全屏（0 到 100vw）
+            // 横向铺满
             p.style.left = Math.random() * 100 + 'vw';
             
-            // 2. 随机大小，产生远近景的层次感（16px 到 40px）
-            const size = Math.random() * 24 + 16;
+            // 随机大小（20px 到 50px）
+            const size = Math.random() * 30 + 20;
             p.style.fontSize = size + 'px';
             
-            // 3. 获取当前手机屏幕的真实高度（去掉地址栏后的可视高度）
+            // 动态获取当前真实高度
             const screenHeight = window.innerHeight;
             
-            // 4. 随机下落时间（2秒到 5秒）
-            const duration = Math.random() * 3 + 2;
+            // 随机下落时间（2.5秒到 5.5秒）
+            const duration = Math.random() * 3 + 2.5;
             p.style.animationDuration = duration + 's';
             
-            // 5. 随机透明度
+            // 随机透明度
             p.style.opacity = Math.random() * 0.8 + 0.2; 
 
-            // 6. 使用 JS 动态设置下落距离（从顶部掉落到屏幕最底部再加 100px 确保完全离开屏幕）
-            p.style.setProperty('--fall-distance', (screenHeight + 100) + 'px');
-
-            // 定义 CSS 变量来结合下落和旋转
-            p.style.transform = `translateY(0) rotate(0deg)`;
+            // 动态生成动画，保证掉落到底部
+            const randomId = Math.floor(Math.random() * 100000);
+            p.style.animation = `fallDown${randomId} ${duration}s linear forwards`;
             
-            // 为了动画能正常运行，我们在这里动态生成一段仅适用于该粒子的 CSS 动画
-            p.style.animation = `fallDown${duration}s_${Math.floor(Math.random()*1000)} linear forwards`;
-            const styleSheet = document.styleSheets[0];
-            const keyframes = `
-                @keyframes fallDown${Math.floor(Math.random()*1000)} {
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fallDown${randomId} {
                     to { transform: translateY(${screenHeight + 100}px) rotate(${Math.random() * 720 - 360}deg); }
                 }
             `;
-            // 简单粗暴的注入方式（适用于较新浏览器）
-            const style = document.createElement('style');
-            style.innerHTML = keyframes;
             document.head.appendChild(style);
-
             document.body.appendChild(p);
             
-            // 动画结束后立刻移除节点，释放内存
+            // 动画结束后清理节点
             setTimeout(() => {
                 p.remove();
-                style.remove(); // 连带清除生成的动画
+                style.remove(); 
             }, duration * 1000);
         }
         
-        // 每 100 毫秒生成一个，保持屏幕内有足够密集的表情
+        // 每 100 毫秒生成一个表情
         setInterval(createParticle, 100);
 
-        // --- 全屏功能逻辑 ---
+        // --- 全屏逻辑 ---
         const fsBtn = document.getElementById('fs-btn');
         fsBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
